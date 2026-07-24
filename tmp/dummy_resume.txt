@@ -1,0 +1,3 @@
+This is a dummy resume for testing upload.
+Name: Test Candidate
+Email: test@example.com
