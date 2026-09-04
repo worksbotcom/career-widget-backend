@@ -112,7 +112,7 @@ exports.getWidgetScript = async (req, res) => {
         const company = await Company.findById(req.company.id);
 
         const script = `
-<script src="https://localhost:3000/widget.js"></script>
+<script src="https://career-widget-backend.vercel.app/widget.js"></script>
 
 <div id="career-widget"></div>
 
