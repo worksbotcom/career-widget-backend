@@ -7,25 +7,24 @@ exports.getPublishedJobs = async (req, res) => {
     try {
 
         const { companyId } = req.params;
+        const company = companyId ? await Company.findOne({ companyId }) : null;
 
-        // Find company using public companyId (e.g. COMP_29F148)
-        const company = await Company.findOne({ companyId });
-
-        if (!company) {
-
+        if (companyId && !company) {
             return res.status(404).json({
                 success: false,
                 message: "Company not found."
             });
-
         }
 
-        const jobs = await Job.find({
-            companyId: company._id,
-            status: "Published"
-        })
+        const query = { status: "Published" };
+        if (company) {
+            query.companyId = company._id;
+        }
+
+        const jobs = await Job.find(query)
             .populate("departmentId", "name")
             .populate("locationId", "name city country")
+            .populate("companyId", "companyName companyId logo")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -52,29 +51,26 @@ exports.getPublishedJob = async (req, res) => {
     try {
 
         const { companyId, id } = req.params;
+        const company = companyId ? await Company.findOne({ companyId }) : null;
 
-        // Find company using public companyId
-        const company = await Company.findOne({ companyId });
-
-        if (!company) {
-
+        if (companyId && !company) {
             return res.status(404).json({
                 success: false,
                 message: "Company not found."
             });
-
         }
 
-        const job = await Job.findOne({
-            _id: id,
-            companyId: company._id,
-            status: "Published"
-        })
+        const query = { _id: id, status: "Published" };
+        if (company) {
+            query.companyId = company._id;
+        }
+
+        const job = await Job.findOne(query)
             .populate("departmentId", "name")
             .populate("locationId", "name city state country type")
             .populate(
                 "companyId",
-                "companyName logo website industry companySize headquarters description"
+                "companyId companyName logo website industry companySize headquarters description"
             );
 
         if (!job) {
